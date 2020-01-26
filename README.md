@@ -7,6 +7,8 @@ Step 1: Crank up your screen brightness and pretend that you're not too broke to
 
 ![screenshot](https://cdn.discordapp.com/attachments/645986855569063966/671033457299685416/Screen_Shot_2020-01-26_at_11.47.00_AM.png)
 
+I used [this library](https://github.com/ivanmaeder/computer-sleep) to try to keep your computer awake while the page is open, but I'm not sure if it actually works or not.
+
 ### Building from source
 This web app was built in [Svelte](https://svelte.dev/)
 
