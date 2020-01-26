@@ -9,11 +9,22 @@
     let intervalTime = 5; // in ms
     let cycleTime = defaultCycleTime;
 
+    let oscCenter;
+    let oscT;
+    let oscAmp = 20;
+
+    let cycleMode;
+
     function enterFullscreen() {
         document.body.requestFullscreen();
     }
-    function cycle() {
+    function cycle_loop() {
         color.h+=360/((cycleTime || defaultCycleTime) * 1000) * intervalTime;
+        color.h = color.h%360;
+    }
+    function cycle_osc() {
+        color.h = oscCenter+Math.sin(oscT)*oscAmp;
+        oscT+=(2*Math.PI)/((cycleTime || defaultCycleTime) * 1000) * intervalTime;
         color.h = color.h%360;
     }
     function toggleCycle() {
@@ -21,7 +32,19 @@
             clearInterval(cycleInterval);
             cycleInterval = null;
         } else {
-            cycleInterval = setInterval(cycle, intervalTime);
+            if (cycleMode == "osc") {
+                oscCenter = color.h;
+                oscT = 0;
+                cycleInterval = setInterval(cycle_osc, intervalTime);
+            } else if (cycleMode == "loop") {
+                cycleInterval = setInterval(cycle_loop, intervalTime);
+            }
+        }
+    }
+    function onChangeCycleMode() {
+        if (cycleInterval) { // if cycle mode changed while currently cycling
+            toggleCycle();
+            toggleCycle(); // reset cycle interval
         }
     }
 </script>
@@ -30,6 +53,7 @@
     .horizontal>div {
         display: inline-block;
         position: relative;
+        margin-right: 20px;
 	}
     .header {
 		position: relative;
@@ -57,9 +81,9 @@
 	}, gradientSize)}">
     <span class="horizontal">
         <div>
-            hue
+            Hue
             <br>
-            saturation
+            Saturation
         </div>
         <div>
             <input type="range" min=0 max=360 bind:value={color.h} class="slider color-slider" style="background: {makeGradient({
@@ -71,19 +95,24 @@
             <input type="range" min=0 max=100 bind:value={color.s} class="slider color-slider" style="background: {satGradient(color)}">
         </div>
         <div>
-            cycle every <input type="number" bind:value={cycleTime} on:change={function(){
+            Cycle every <input type="number" bind:value={cycleTime} on:change={function(){
                 if (!cycleTime) {
                     cycleTime = defaultCycleTime;
                 }
-            }}> seconds
+            }} style="width:50px"> seconds
             
             <br>
-            <button on:click={toggleCycle}>cycle</button>
-            <button on:click={enterFullscreen}>fullscreen</button>
+            <button on:click={toggleCycle}>Cycle</button>
+            <button on:click={enterFullscreen}>Fullscreen</button>
+            <select bind:value={cycleMode} on:change={onChangeCycleMode}>
+                <option value="loop">Loop</option>
+                <option value="osc">Oscillate</option>
+            </select>
             
         </div>
         <div>
-            gradient size <input type="range" min=0 max=60 bind:value={gradientSize} class="slider color-slider" style="background: {makeGradient(color, 60)}">
+            Gradient size <input type="range" min=0 max=60 bind:value={gradientSize} class="slider color-slider" style="background: {makeGradient(color, 60)}">
+            
         </div>
         {
             cycleTime<=0.8 ? "(epilepsy warning)" : ""
