@@ -3,11 +3,18 @@
     export let color;
     export let gradientSize;
 
-    let defaultCycleTime = 20;
+    let cycleTimeDefaults = {
+        "loop": 20,
+        "osc": 5
+    };
+
+    let cycleTimes = {
+        "loop": 20,
+        "osc": 5
+    };
 
     let cycleInterval;
     let intervalTime = 5; // in ms
-    let cycleTime = defaultCycleTime;
 
     let oscCenter;
     let oscT;
@@ -19,12 +26,12 @@
         document.body.requestFullscreen();
     }
     function cycle_loop() {
-        color.h+=360/((cycleTime || defaultCycleTime) * 1000) * intervalTime;
+        color.h+=360/((cycleTimes.loop || cycleTimeDefaults.loop) * 1000) * intervalTime;
         color.h = color.h%360;
     }
     function cycle_osc() {
         color.h = oscCenter+Math.sin(oscT)*oscAmp;
-        oscT+=(2*Math.PI)/((cycleTime || defaultCycleTime) * 1000) * intervalTime;
+        oscT+=(2*Math.PI)/((cycleTimes.osc || cycleTimeDefaults.osc) * 1000) * intervalTime;
         color.h = color.h%360;
     }
     function toggleCycle() {
@@ -95,9 +102,9 @@
             <input type="range" min=0 max=100 bind:value={color.s} class="slider color-slider" style="background: {satGradient(color)}">
         </div>
         <div>
-            Cycle every <input type="number" bind:value={cycleTime} on:change={function(){
-                if (!cycleTime) {
-                    cycleTime = defaultCycleTime;
+            Cycle every <input type="number" bind:value={cycleTimes[cycleMode]} on:change={function(){
+                if (!cycleTimes[cycleMode]) {
+                    cycleTimes[cycleMode] = cycleTimeDefaults[cycleMode];
                 }
             }} style="width:50px"> seconds
             
@@ -114,8 +121,6 @@
             Gradient size <input type="range" min=0 max=60 bind:value={gradientSize} class="slider color-slider" style="background: {makeGradient(color, 60)}">
             
         </div>
-        {
-            cycleTime<=0.8 ? "(epilepsy warning)" : ""
-        }
+
     </span>
 </div>
