@@ -9,7 +9,10 @@
 		};
 	let gradientSize = 0;
 	
-	sleep.prevent();
+	setInterval(()=>{
+		sleep.prevent(); // keep trying this; sometimes it throws a DOMException (why: https://goo.gl/xX8pDD)
+	}, 10000);
+	
 </script>
 
 <style>
